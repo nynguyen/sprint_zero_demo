@@ -10,7 +10,10 @@
 		{% if inputs %}
 			<ul>
 			{% for inputfile in inputs %}
+				<li>{{ inputfile.name }}</li>
+				<li>{{ inputfile.privacy }}</li>
 				<li><a href= "{{ inputfile.input.url }}">{{ inputfile.input.name }}</a></li>
+				<li><a href= "{{ inputfile.next_one.url }}">{{inputfile.next_one.name }}</a></li>
 			{% endfor %}
 			</ul>
 		{% else %}
@@ -19,12 +22,8 @@
 
 		<form action = "{% url "list"  %}" method="post" enctype="multipart/form-data">
 			{% csrf_token %}
-			<p>{{ form.non_field_errors }}</p>
-			<p>{{ form.input.label_tag }} {{ form.input.help_text }}</p>
-			<p>
-				{{ form.input.errors }}
-				{{ form.input }}
-			</p>
+			{{ form.as_p }}
+
 			<p> <input type="submit" value="Upload" /></p>
 		</form>
 

@@ -1,0 +1,34 @@
+Creating and managing Django projects in PyCharm
+
+* Create New Project
+* project name
+* Project type: Django project
+- stub project created = framework specific files and directories
+
+- Project view
+- Project files view
+
+adding applications = run the startapp task of manage.py 
+Tools->Run manage.py task - startapp
+
+select file in Project tool window, press F4
+running the server - runserver task of manage.py utility: Ctrl+Alt+R
+
+models.py file
+class Poll(models.Model):
+
+create Database = use Ctrl+Alt+R (2x)
+	- select 'sql'
+	- select your application
+
+syncdb
+
+create admin.py file = Alt+Ins
+
+Django server run configuration
+	- run/debug
+	- Edit Configuration
+	- name of project in Name: field
+	- select check box Run browser
+
+Ctrl+Space code completions

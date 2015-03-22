@@ -1,0 +1,136 @@
+DJANGO APP CREATION TUTORIAL
+- autogenerate some code to establish a Django project
+	* instance of Django
+	* database config
+	* Django options
+	* application settings
+
+django-admin.py startproject [projectName]
+
+do not put code in your Web server's document root - code in directory
+outside of the document root
+
+[projectName]/
+	manage.py
+	[projectName]/
+		__init__.py
+		settings.py
+		urls.py
+		wsgi.py
+
+[projectName]/ = directory container for project
+second [projectName]/ >> actual Python package for the project
+urls.py : URL declarations = table of contents
+
+call projectName = mysite
+mysite/settings.py
+-	select your database preference
+	change keys in DATABASES 'default' to match your database connection
+	* ENGINE = 'django.db.backends.sqlite3'
+		or 'django.db.backends.postgresql_psycopg2'
+	* NAME = name of db - database will be in file on your computer
+		- full absolute path + file name
+- TIME_ZONE = your time zone
+- INSTALLED_APPS = all names of Django apps that are activated in Django instance
+
+need to create tables in database before we can use
+-	python manage.py migrate
+	* look at INSTALLED_APPS, create any necessary database tables and database migrations
+	.schema = shows the tables that django made
+
+DOES IT WORK?
+python manage.py runserver [port] [*XOR* IP:PORT]
+
+- run the Django development server, written in Python, don't need to deal with production server until production
+go to :  http://127.0.0.1:8000/ in order to see your WebApp on the dev server
+
+- sometimes will need to restart the server if your changes don't seem to take place
+
+Django Models = autogen basic directory structure so that you can focus
+on writing code
+-	creates directories
+PROJECT = collection of configurations and apps
+APP = a web application that does something
+
+create the app next to manage.py, not a submodule of mysite
+
+cd into direction same as manage.py
+
+python manage.py startapp [appName] <--- appName = polls in this case
+
+polls/
+	__init__.py
+	admin.py
+	migrations/
+		__init__.py
+	models.py
+	tests.py
+	views.py
+
+define your models = your database layone with metadata
+model = single, definitive source of data, fields and data behavior
+migrations = just a history that can update your database schema to match model
+models/databases = represented in Python as classes that import from 
+	from django.db import models
+	inherit from django.db.models.Model
+optional first positional argument to a Field = designate human-readable name
+	pub_date = models.DateTimeField('date published')
+	CharFields = need a max_length parameter
+	default values
+	ForeignKey
+from your polls/models.py, Django can create:
+	* database schema
+	* Python database access API
+	- can use apps in multiple projects
+		edit mysite/settings.py
+			add 'polls' under INSTALLED_APPS
+		python manage.py makemigrations [polls]
+
+makemigrations
+	* you made some changes to your models
+	* store changes as a migration
+	* can read the python files
+migrate
+	* runs the migrations for you
+	* manage the database schema
+	* sqlmigrate
+
+-	table names: [appName]_[modelName]
+-	append _id to foreign key name
+tailored to your database
+-	sqlmigrate does not actually do migration = print to screen so you can see what it thinks it needs to do
+
+migrate: 
+	- actually creates the tables
+	- take all migrations not applied, run against the database
+	- synchronize models with .schema 
+check:
+	- checks for problems before you migrate
+1) change models
+2) python manage.py makemigrations
+3) python manage.py migrate
+
+commit migrations to version control
+
+python manage.py shell - sets the DJANGO_SETTINGS_MODULE environment variable
+- must run python from the same directory as manage.py - ensure that import mysite works
+
+get data from database in form of a list
+-	[ModelName].objects.all()
+from django.utils import timezone
+-	[object, ModelName instance].save() add to database
+- 	[ModelName].objects.filter([criteria]=[value])
+-	Question.objects.filter(question_text_startswith='What')
+-	[ModelName].objects.get([criteria_field]=[value])
+- pk = primary key
+
+--- change the polls/models.py -----
+	def __str__(self):
+		return self.question_text
+		-- use a useful identifier
+*	object's representations are used throughout Django's automatically generated admin
+* 	can add custom methods to act on the data
+
+
+
+

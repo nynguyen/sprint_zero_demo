@@ -1,0 +1,121 @@
+WRITING YOUR DJANGO APP PART 3
+
+creating the public interface - 'views'
+view = type of Web page in your Django application: serves a function, 
+has a specific template
+
+webpages and other content are delivered by views, view is represented
+by a Python function(or method)
+- Django chooses a view by examining the URL that is requested
+ use URLconfs - maps the URL patterns to views
+
+polls/views.py
+
+from django.http import HttpResponse
+
+def index(request):
+	return HttpResponse("Hello world. You're at the polls index.")
+
+call the view --> map it to a URL and have a URLconf
+create a file called urls.py
+
+polls/urls.py
+
+from django.conf.urls import patterns, url
+
+from polls import views
+
+urlpatterns = patterns('', 
+	url(r'^$', views.index, name='index'),
+	)
+up to the project from the application
+
+mysite/urls.py
+from django.conf.urls import patterns, include, url
+from django.contrib import admin
+
+urlpatterns = patterns('',
+	url(r'^polls/', include('polls.urls')),
+	url(r'^admin/', include(admin.site.urls)),
+)
+
+url() arguments
+
+1) regex - pattern matching in strings
+- Django starts at first regex and makes its way down the list until it finds a match
+- the regular expressions are compiled the first time URLconf is loaded
+
+2) view
+- find a regex and call the specified view function with HttpRequest object
+- will call with whatever captured values from the regex
+- positional or named arguments (keyword arguments)
+
+3) kwargs
+- arbitrary keyword arguments passed in a dictionary to the target view
+
+4) name
+- allows you to refer to it unambiguously from elsewhere in Django
+- able to change the url patterns by changing only one file
+
+$ = end-of-string match character
+
+- Django finds the match
+- strips the matching text and send the remaining text to URLconf for further processing
+- call to detail() view with the input parameters being the processed string
+- (?P<question_id>\d+) = parentheses = capture the text matched by the pattern, send as an argument
+?P<question_id> -- name to identify the matched pattern
+d+ = sequence of digits
+
+Views to do stuff
+views should:
+1) return an HttpResponse object containing content
+2) raise an exception using Http404
+- use Django's template system to separate the design from Python so that you aren't hardcoding things
+	- create a directory called templates
+	- django.template.loaders.app_directories.Loader = looks for templates in subdirectory in each of the INSTALLED_APPS
+	- within the template directory, create a directory called [appName]
+	- templates >> [appName] >>> index.html
+		* polls/templates/polls/index.html
+namespacing = putting files inside other directories named for the application itself
+using templates:
+	from django.template import RequestContext, loader
+	template = loader.get_template('polls/index.html') -- polls/index.html == polls/templates/polls/index
+	context = RequestContext(request, {'latest_question_list': latest_question_list, })
+	return HttpResponse(template.render(context))
+context = dictionary mapping template variable names to Python objects
+
+render()
+- context = {'latest_question_list' : latest_question_list}
+  return render(request, 'polls/index.html', context)
+	* args:
+		1) request object
+		2) template name
+		3) dictionary as optional 3rd
+		returns HttpResponse object of given template
+404 Errors
+- in conjunction with try/except
+or shortcut with get_object_or_404
+
+question = get_object_or_404(Question, pk=question_id)
+return render(request, 'polls/detail.html', {'question': question})
+
+from django.shortcuts import get_object_or_404, render
+
+get_list_or_404()
+get_object_or_404()
+
+remove reliance on specific URL paths by using the {% url %} template tag
+<li><a href= "{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
+detail is specified in the polls.urls module
+url(r'^(?P<question_id>\d+)/$', views.detail, name='detail')
+
+want to change the URL? -- change the polls/urls.py file, don't need to change the templates
+
+how does Django know which app view to create for a url when using {% url %}
+- add namespaces to your root URLconf
+- project url file
+url(r'^polls/', include('polls.urls', namespace="polls"))
+href = "{% url 'polls:detail' question.id %}"
+
+
+

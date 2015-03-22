@@ -1,0 +1,61 @@
+DJANGO APP PART 2
+
+Django entirely automates the creation of admin interfaces
+content publishers vs. public
+
+creating an admin user:
+	python manage.py createsuperuser
+	Username: [desired user name]
+	Email Address: [your email]
+	Password: ...
+
+start the development server
+
+python manage.py runserver
+
+http://127.0.0.1:8000/admin/ --> local domain, see the admin login screen
+
+polls/admin.py >> Question objects have an admin interface
+
+from django.contrib import admin
+from polls.models import Question
+admin.site.register(Question)
+
+History -- see a page listing all of the changes made to the object via Django admin
+
+can tell Django how to construct a form based on your preferences
+instead
+
+class QuestionAdmin(admin.ModelAdmin):
+	fields = ['pub_date', 'question_text']
+
+admin.site.register(Question, QuestionAdmin)
+- makes an intuitive ordering of your fields, usability
+- makes the publication date come before the question listed
+
+add --> list.filter['pub_date']
+	adds a filter sidebar that lets people filter the change list by the pub_date field
+search_fields = ['question_text']
+
+customizing project templates:
+create a templates directory - anywhere on the filesystem
+
+mysite/settings.py
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+	- creates a search path for Django templates
+create a directory called admin in templates
+copy the template admin/base_site.html from (django/contrib/admin/templates)
+
+Django source files:
+print(django.__path__)
+
+{%
+{{
+Django's template language
+any of the admin templates can be overrident - copy the source file (from
+default directory into custom directory and make the changes)
+
+
+
+
+
