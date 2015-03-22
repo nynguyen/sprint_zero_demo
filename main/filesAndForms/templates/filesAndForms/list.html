@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Minimal File Upload</title>
+	</head>
+
+	<body>
+	
+		{% if inputs %}
+			<ul>
+			{% for inputfile in inputs %}
+				<li><a href= "{{ inputfile.input.url }}">{{ inputfile.input.name }}</a></li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<p> Nothing useful </p>
+		{% endif %}
+
+		<form action = "{% url "list"  %}" method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			<p>{{ form.non_field_errors }}</p>
+			<p>{{ form.input.label_tag }} {{ form.input.help_text }}</p>
+			<p>
+				{{ form.input.errors }}
+				{{ form.input }}
+			</p>
+			<p> <input type="submit" value="Upload" /></p>
+		</form>
+
+	</body>
+
+</html>
